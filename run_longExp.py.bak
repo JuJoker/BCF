@@ -2,7 +2,6 @@ import argparse
 import os
 import torch
 from exp.exp_building import Building_Exp_Main
-from exp.exp_main import Exp_Main
 import random
 import numpy as np
 
@@ -11,22 +10,20 @@ random.seed(fix_seed)
 torch.manual_seed(fix_seed)
 np.random.seed(fix_seed)
 
-parser = argparse.ArgumentParser(description='Building energy consumption Forecasting')
+parser = argparse.ArgumentParser(description='DCL Forecast for building energy')
 
 # basic config
 parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
 parser.add_argument('--train_only', type=bool, required=False, default=False, help='perform training on full input dataset without validation and testing')
 parser.add_argument('--model_id', type=str, required=True, default='train', help='model id')
 parser.add_argument('--model', type=str, required=True, default='DCLinear',
-                    help='model name, options: [Autoformer, Informer, Transformer,DLinear,DCLinear]')
+                    help='model name, options: [DCLinear]')
 
 # data loader
 parser.add_argument('--data', type=str, required=True, default='Dataset_Building', help='dataset type')
 parser.add_argument('--root_path', type=str, default='./dataset/', help='root path of the data file')
 parser.add_argument('--data_path', type=str, default='Hog_assembly_Colette.csv', help='data file')
 parser.add_argument('--target', type=str, default='electricity', help='target column')
-parser.add_argument('--features', type=str, default='M',
-                    help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
 parser.add_argument('--freq', type=str, default='h',
                     help='freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h')
 parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
@@ -36,29 +33,12 @@ parser.add_argument('--seq_len', type=int, default=96, help='input sequence leng
 parser.add_argument('--label_len', type=int, default=48, help='start token length')
 parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
 
+
 # DCLinear
 parser.add_argument('--in_channels', type=int, default=7, help='encoder input size')
 parser.add_argument('--out_channels', type=int, default=1, help='encoder output size')
-parser.add_argument('--kernel_size', type=int, default=25, help='kernel_size of mvg_avg')
-# DLinear
-parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
-# Formers 
-parser.add_argument('--embed_type', type=int, default=0, help='0: default 1: value embedding + temporal embedding + positional embedding 2: value embedding + temporal embedding 3: value embedding + positional embedding 4: value embedding')
-parser.add_argument('--enc_in', type=int, default=7, help='encoder input size') # DLinear with --individual, use this hyperparameter as the number of channels
-parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
-parser.add_argument('--c_out', type=int, default=7, help='output size')
-parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
-parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
-parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
-parser.add_argument('--d_layers', type=int, default=1, help='num of decoder layers')
-parser.add_argument('--d_ff', type=int, default=2048, help='dimension of fcn')
-
 parser.add_argument('--moving_avg', type=int, default=25, help='window size of moving average')
-parser.add_argument('--factor', type=int, default=1, help='attn factor')
-parser.add_argument('--distil', action='store_false',
-                    help='whether to use distilling in encoder, using this argument means not using distilling',
-                    default=True)
-parser.add_argument('--dropout', type=float, default=0.2, help='dropout')
+parser.add_argument('--dropout', type=float, default=0.05, help='dropout')
 parser.add_argument('--embed', type=str, default='timeF',
                     help='time features encoding, options:[timeF, fixed, learned]')
 parser.add_argument('--activation', type=str, default='gelu', help='activation')
@@ -84,8 +64,6 @@ parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple g
 parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
 parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
 
-# model select
-parser.add_argument('--custom_model', type=int, default=1, help='weather user custom model to predict')
 
 args = parser.parse_args()
 
@@ -100,20 +78,27 @@ if args.use_gpu and args.use_multi_gpu:
 print('Args in experiment:')
 print(args)
 
-if args.custom_model:
-    Exp = Building_Exp_Main
-else:
-    Exp = Exp_Main
+Exp = Building_Exp_Main
 
 if args.is_training:
     for ii in range(args.itr):
         # setting record of experiments
-        setting = '{}_{}_seq_len{}_label_len{}_pred_len{}_{}_{}'.format(
+        setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(
+            args.model_id,
             args.model,
             args.data,
+            args.features,
             args.seq_len,
             args.label_len,
             args.pred_len,
+            args.d_model,
+            args.n_heads,
+            args.e_layers,
+            args.d_layers,
+            args.d_ff,
+            args.factor,
+            args.embed,
+            args.distil,
             args.des, ii)
 
         exp = Exp(args)  # set experiments
@@ -131,13 +116,22 @@ if args.is_training:
         torch.cuda.empty_cache()
 else:
     ii = 0
-    setting = '{}_{}_sl{}_ll{}_pl{}_{}_{}'.format(
-        args.model,
-        args.data,
-        args.seq_len,
-        args.label_len,
-        args.pred_len,
-        args.des, ii)
+    setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_fc{}_eb{}_dt{}_{}_{}'.format(args.model_id,
+                                                                                                  args.model,
+                                                                                                  args.data,
+                                                                                                  args.features,
+                                                                                                  args.seq_len,
+                                                                                                  args.label_len,
+                                                                                                  args.pred_len,
+                                                                                                  args.d_model,
+                                                                                                  args.n_heads,
+                                                                                                  args.e_layers,
+                                                                                                  args.d_layers,
+                                                                                                  args.d_ff,
+                                                                                                  args.factor,
+                                                                                                  args.embed,
+                                                                                                  args.distil,
+                                                                                                  args.des, ii)
 
     exp = Exp(args)  # set experiments
 
