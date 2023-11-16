@@ -114,7 +114,7 @@ if args.is_training:
             args.seq_len,
             args.label_len,
             args.pred_len,
-            args.des, ii)
+            args.da, ii)
 
         exp = Exp(args)  # set experiments
         print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
@@ -131,13 +131,13 @@ if args.is_training:
         torch.cuda.empty_cache()
 else:
     ii = 0
-    setting = '{}_{}_sl{}_ll{}_pl{}_{}_{}'.format(
+    setting = '{}_{}_sl{}_ll{}_pl{}_{}'.format(
         args.model,
         args.data,
         args.seq_len,
         args.label_len,
         args.pred_len,
-        args.des, ii)
+        args.data_path)
 
     exp = Exp(args)  # set experiments
 
