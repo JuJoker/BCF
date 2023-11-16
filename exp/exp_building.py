@@ -229,7 +229,7 @@ class Building_Exp_Main(Exp_Basic):
         f.write('\n')
         f.close()
 
-        res_csv = [args.model, args.seq_len, args.pred_len, mae, mse, rmse, mape, mspe, rse, r2]
+        res_csv = [args.model, args.seq_len, args.pred_len, args.data_path, mae, mse, rmse, mape, mspe, rse, r2]
         # CSV filepath
         csv_file_path = "results.csv"
 
