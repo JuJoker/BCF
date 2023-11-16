@@ -17,8 +17,8 @@ parser = argparse.ArgumentParser(description='Building energy consumption Foreca
 parser.add_argument('--is_training', type=int, required=True, default=1, help='status')
 parser.add_argument('--train_only', type=bool, required=False, default=False, help='perform training on full input dataset without validation and testing')
 parser.add_argument('--model_id', type=str, required=True, default='train', help='model id')
-parser.add_argument('--model', type=str, required=True, default='DCLinear',
-                    help='model name, options: [Autoformer, Informer, Transformer,DLinear,DCLinear]')
+parser.add_argument('--model', type=str, required=True, default='DCDense',
+                    help='model name, options: [Autoformer, Informer, Transformer,DLinear,DCDense]')
 
 # data loader
 parser.add_argument('--data', type=str, required=True, default='building_data', help='dataset type')
