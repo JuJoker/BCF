@@ -207,7 +207,7 @@ class Exp_Main(Exp_Basic):
 
         return self.model
 
-    def test(self, setting, test=0):
+    def test(self, setting, args, test=0):
         test_data, test_loader = self._get_data(flag='test')
         
         if test:
@@ -285,14 +285,23 @@ class Exp_Main(Exp_Basic):
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        mae, mse, rmse, mape, mspe, rse, corr = metric(preds, trues)
-        print('mse:{}, mae:{}'.format(mse, mae))
+        mae, mse, rmse, mape, mspe, rse, r2 = metric(preds, trues)
+        print('mae:{}, mse:{}, rmse:{}, mape:{}, mspe:{}, rse:{}, r2:{}'.format(mae, mse, rmse, mape, mspe, rse, r2))
         f = open("result.txt", 'a')
         f.write(setting + "  \n")
-        f.write('mse:{}, mae:{}, rse:{}, corr:{}'.format(mse, mae, rse, corr))
+        f.write('mae:{}, mse:{}, rmse:{}, mape:{}, mspe:{}, rse:{}, r2:{}'.format(mae, mse, rmse, mape, mspe, rse, r2))
         f.write('\n')
         f.write('\n')
         f.close()
+
+        res_csv = [args.model, args.seq_len, args.pred_len, args.data_path, mae, mse, rmse, mape, mspe, rse, r2]
+        # CSV filepath
+        csv_file_path = os.path.join(args.res_csv_path, "results.csv")
+
+        # open CSV file to appen new row
+        with open(csv_file_path, mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(res_csv)
 
         # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
         np.save(folder_path + 'pred.npy', preds)
