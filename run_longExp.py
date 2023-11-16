@@ -86,6 +86,8 @@ parser.add_argument('--test_flop', action='store_true', default=False, help='See
 
 # model select
 parser.add_argument('--custom_model', type=int, required=True, default=1, help='weather user custom model to predict')
+# result csv path
+parser.add_argument('--res_csv_path', type=str, default='', help='result csv file path')
 
 args = parser.parse_args()
 
@@ -122,7 +124,7 @@ if args.is_training:
 
         if not args.train_only:
             print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-            exp.test(setting, args, test=1)
+            exp.test(setting=setting, args=args, test=1)
 
         if args.do_predict:
             print('>>>>>>>predicting : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
@@ -146,5 +148,5 @@ else:
         exp.predict(setting, True)
     else:
         print('>>>>>>>testing : {}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'.format(setting))
-        exp.test(setting, args, test=1)
+        exp.test(setting=setting, args=args, test=1)
     torch.cuda.empty_cache()
