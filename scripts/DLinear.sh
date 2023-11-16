@@ -28,6 +28,7 @@ do
     --is_training 1 \
     --model_id train \
     --model $model_name \
+    --pred_len $pred_len \
     --checkpoints /home/yy/BCF/checkpoints/ \
     --res_csv_path /home/yy/BCF/ \
     --data custom >/home/yy/BCF/logs/BuildingEnergyPredict/$model_name'_'$filename'_'$pred_len.log

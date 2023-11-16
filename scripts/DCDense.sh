@@ -27,6 +27,7 @@ do
     --data_path $filename \
     --is_training 1 \
     --model_id train \
+    --pred_len $pred_len \
     --model $model_name \
     --checkpoints /home/yy/BCF/checkpoints/ \
     --res_csv_path /home/yy/BCF/ \
