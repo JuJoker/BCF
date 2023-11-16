@@ -101,15 +101,14 @@ class Building_Exp_Main(Exp_Basic):
 
         if self.args.use_amp:
             scaler = torch.cuda.amp.GradScaler()
-
         for epoch in range(self.args.train_epochs):
             train_loss = []
 
             self.model.train()
 
             # use tqdm to create a loading bar
-            loop_loader = tqdm((train_loader), total=len(train_loader))
-            for true_target, true_univariate, true_time_mask, pred_target in loop_loader:
+            loop_batch = tqdm((train_loader), total=len(train_loader), colour='green')
+            for true_target, true_univariate, true_time_mask, pred_target in loop_batch:
 
                 # get the data to cuda or cpu
                 true_target = true_target.float().to(self.device)
@@ -138,17 +137,19 @@ class Building_Exp_Main(Exp_Basic):
                 else:
                     loss.backward()
                     model_optim.step()
+                loop_batch.set_description(f'Epoch: {epoch + 1} / {self.args.train_epochs} is training.')
+                loop_batch.set_postfix(train_loss=f'{loss:.7f}')
 
             train_loss = np.average(train_loss)
             if not self.args.train_only:
                 vali_loss = self.vali(vali_data, vali_loader, criterion)
                 test_loss = self.vali(test_data, test_loader, criterion)
-
                 early_stopping(vali_loss, self.model, path)
+                print(f'Epoch: {epoch + 1} / {self.args.train_epochs} train finished! avg_train_loss:{train_loss:.7f} vali_loss: {vali_loss:.7f} test_loss:{test_loss:.7f}')
             else:
                 early_stopping(train_loss, self.model, path)
-            loop_loader.set_description(f'Epoch: {epoch + 1} / {self.args.train_epochs}')
-            loop_loader.set_postfix(train_loss=loss.item(), vali_loss=f'{vali_loss:.7f}', test_loss=f'{test_loss:.7f}')
+                print(f'Epoch: {epoch + 1} / {self.args.train_epochs} train finished!')
+
             if early_stopping.early_stop:
                 print("Early stopping")
                 break
