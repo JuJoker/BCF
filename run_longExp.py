@@ -21,7 +21,7 @@ parser.add_argument('--model', type=str, required=True, default='DCLinear',
                     help='model name, options: [Autoformer, Informer, Transformer,DLinear,DCLinear]')
 
 # data loader
-parser.add_argument('--data', type=str, required=True, default='Dataset_Building', help='dataset type')
+parser.add_argument('--data', type=str, required=True, default='building_data', help='dataset type')
 parser.add_argument('--root_path', type=str, default='./dataset/', help='root path of the data file')
 parser.add_argument('--data_path', type=str, default='Hog_assembly_Colette.csv', help='data file')
 parser.add_argument('--target', type=str, default='electricity', help='target column')
@@ -32,9 +32,9 @@ parser.add_argument('--freq', type=str, default='h',
 parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
 
 # forecasting task
-parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')
+parser.add_argument('--seq_len', type=int, default=720, help='input sequence length')
 parser.add_argument('--label_len', type=int, default=48, help='start token length')
-parser.add_argument('--pred_len', type=int, default=96, help='prediction sequence length')
+parser.add_argument('--pred_len', type=int, default=48, help='prediction sequence length')
 
 # DCLinear
 parser.add_argument('--in_channels', type=int, default=7, help='encoder input size')
@@ -68,7 +68,7 @@ parser.add_argument('--do_predict', action='store_true', help='whether to predic
 # optimization
 parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')
 parser.add_argument('--itr', type=int, default=1, help='experiments times')
-parser.add_argument('--train_epochs', type=int, default=10, help='train epochs')
+parser.add_argument('--train_epochs', type=int, default=50, help='train epochs')
 parser.add_argument('--batch_size', type=int, default=32, help='batch size of train input data')
 parser.add_argument('--patience', type=int, default=3, help='early stopping patience')
 parser.add_argument('--learning_rate', type=float, default=0.0001, help='optimizer learning rate')
@@ -85,7 +85,7 @@ parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids o
 parser.add_argument('--test_flop', action='store_true', default=False, help='See utils/tools for usage')
 
 # model select
-parser.add_argument('--custom_model', type=int, default=1, help='weather user custom model to predict')
+parser.add_argument('--custom_model', type=int, required=True, default=1, help='weather user custom model to predict')
 
 args = parser.parse_args()
 
