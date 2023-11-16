@@ -108,13 +108,13 @@ else:
 if args.is_training:
     for ii in range(args.itr):
         # setting record of experiments
-        setting = '{}_{}_seq_len{}_label_len{}_pred_len{}_{}_{}'.format(
+        setting = '{}_{}_seq_len{}_label_len{}_pred_len{}_{}'.format(
             args.model,
             args.data,
             args.seq_len,
             args.label_len,
             args.pred_len,
-            args.da, ii)
+            args.data_path)
 
         exp = Exp(args)  # set experiments
         print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
