@@ -231,7 +231,7 @@ class Building_Exp_Main(Exp_Basic):
 
         res_csv = [args.model, args.seq_len, args.pred_len, args.data_path, mae, mse, rmse, mape, mspe, rse, r2]
         # CSV filepath
-        csv_file_path = "results.csv"
+        csv_file_path = os.path.join(args.res_csv_path,"results.csv")
 
         # open CSV file to appen new row
         with open(csv_file_path, mode='a', newline='') as file:
