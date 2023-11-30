@@ -25,7 +25,7 @@ parser.add_argument('--data', type=str, required=True, default='building_data', 
 parser.add_argument('--root_path', type=str, default='./dataset/', help='root path of the data file')
 parser.add_argument('--data_path', type=str, default='Hog_assembly_Colette.csv', help='data file')
 parser.add_argument('--target', type=str, default='electricity', help='target column')
-parser.add_argument('--features', type=str, default='M',
+parser.add_argument('--features', type=str, default='MS',
                     help='forecasting task, options:[M, S, MS]; M:multivariate predict multivariate, S:univariate predict univariate, MS:multivariate predict univariate')
 parser.add_argument('--freq', type=str, default='h',
                     help='freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h')
@@ -37,16 +37,16 @@ parser.add_argument('--label_len', type=int, default=48, help='start token lengt
 parser.add_argument('--pred_len', type=int, default=48, help='prediction sequence length')
 
 # DCLinear
-parser.add_argument('--in_channels', type=int, default=7, help='encoder input size')
+parser.add_argument('--in_channels', type=int, default=5, help='encoder input size')
 parser.add_argument('--out_channels', type=int, default=1, help='encoder output size')
 parser.add_argument('--kernel_size', type=int, default=25, help='kernel_size of mvg_avg')
 # DLinear
 parser.add_argument('--individual', action='store_true', default=False, help='DLinear: a linear layer for each variate(channel) individually')
 # Formers 
 parser.add_argument('--embed_type', type=int, default=0, help='0: default 1: value embedding + temporal embedding + positional embedding 2: value embedding + temporal embedding 3: value embedding + positional embedding 4: value embedding')
-parser.add_argument('--enc_in', type=int, default=7, help='encoder input size') # DLinear with --individual, use this hyperparameter as the number of channels
-parser.add_argument('--dec_in', type=int, default=7, help='decoder input size')
-parser.add_argument('--c_out', type=int, default=7, help='output size')
+parser.add_argument('--enc_in', type=int, default=5, help='encoder input size') # DLinear with --individual, use this hyperparameter as the number of channels
+parser.add_argument('--dec_in', type=int, default=5, help='decoder input size')
+parser.add_argument('--c_out', type=int, default=1, help='output size')
 parser.add_argument('--d_model', type=int, default=512, help='dimension of model')
 parser.add_argument('--n_heads', type=int, default=8, help='num of heads')
 parser.add_argument('--e_layers', type=int, default=2, help='num of encoder layers')
@@ -86,8 +86,6 @@ parser.add_argument('--test_flop', action='store_true', default=False, help='See
 
 # model select
 parser.add_argument('--custom_model', type=int, required=True, default=1, help='weather user custom model to predict')
-# result csv path
-parser.add_argument('--res_csv_path', type=str, default='', help='result csv file path')
 
 args = parser.parse_args()
 
