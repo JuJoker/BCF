@@ -20,7 +20,7 @@ do
   filename=$(basename "$file")
   for model_name in Autoformer Informer Transformer
   do
-    for pred_len in 6 12 24 48 72 96 120 144 168 336 504 720
+    for pred_len in 12 24 36 48 72 84 96 108 120 132 144 156 168
     do
       python -u /home/yy/BCF/run_longExp.py \
       --custom_model 0 \
@@ -31,12 +31,10 @@ do
       --model $model_name \
       --data custom \
       --seq_len $seq_len \
-      --label_len 96 \
+      --label_len 24 \
       --pred_len $pred_len \
       --e_layers 2 \
       --d_layers 1 \
-      --checkpoints /home/yy/BCF/checkpoints/ \
-      --res_csv_path /home/yy/BCF/ \
       --factor 3 >/home/yy/BCF/logs/BuildingEnergyPredict/$model_name'_'$filename'_'$pred_len.log
     done
   done
