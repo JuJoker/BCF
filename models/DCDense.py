@@ -62,23 +62,32 @@ class Encoder(nn.Module):
                                out_channels=in_channels // 2,
                                kernel_size=kernel_size,
                                stride=stride)
+        self.max_pool1 = nn.MaxPool1d(kernel_size=kernel_size,
+                                     stride=stride)
         self.drop = nn.Dropout(p=dropout)
         self.conv2 = nn.Conv1d(in_channels=in_channels // 2,
                                out_channels=out_channels,
                                kernel_size=kernel_size,
                                stride=stride)
+        self.max_pool2 = nn.MaxPool1d(kernel_size=kernel_size,
+                                      stride=stride)
         self.conv3 = nn.Conv1d(in_channels=out_channels,
                                out_channels=out_channels,
                                kernel_size=kernel_size,
                                stride=stride)
+        self.max_pool3 = nn.MaxPool1d(kernel_size=kernel_size,
+                                      stride=stride)
 
     def forward(self, x):
         # x shape:[batch, feature_num + target_num, seq_len]
         x = self.conv1(x)
+        x = self.max_pool1(x)
         x = self.drop(x)
         x = self.conv2(x)
+        x = self.max_pool2(x)
         x = self.drop(x)
         x = self.conv3(x)
+        x = self.max_pool3(x)
         x = self.drop(x)
         return x
 
